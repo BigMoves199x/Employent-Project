@@ -52,7 +52,10 @@ export default function ApplicantForm() {
       });
 
       if (res.ok) {
-        router.push('/apply/success');
+        // Wait 2 seconds before navigating
+        setTimeout(() => {
+          router.push('/apply/success');
+        }, 2000);
       } else {
         const text = await res.text();
         console.error('Server error:', text);
@@ -62,7 +65,7 @@ export default function ApplicantForm() {
       console.error('Network error:', err);
       alert('Network error. Please check your connection.');
     } finally {
-      setLoading(false);
+      // Optional: keep loading state true until after navigation
     }
   };
 
@@ -144,9 +147,16 @@ export default function ApplicantForm() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-md font-semibold disabled:opacity-50"
+              className="w-full flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-md font-semibold disabled:opacity-50"
             >
-              {loading ? 'Submitting...' : 'Submit Application'}
+              {loading ? (
+                <>
+                  <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Submitting...
+                </>
+              ) : (
+                'Submit Application'
+              )}
             </button>
           </div>
         </form>

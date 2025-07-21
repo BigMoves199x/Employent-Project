@@ -16,6 +16,7 @@
     "cloudinary": "^2.7.0",
     "clsx": "^2.1.1",
     "dotenv": "^17.0.1",
+    "framer-motion": "^12.23.6",
     "gsap": "^3.13.0",
     "mime-types": "^3.0.1",
     "next": "15.4.0-canary.101",

@@ -12,28 +12,39 @@ export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false); // 🔹 Loading state
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
-    const res = await fetch('/api/admin-login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        username: email, // ✅ backend expects "username"
-        password,
-      }),
-    });
+    try {
+      const res = await fetch('/api/admin-login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: email,
+          password,
+        }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (res.ok) {
-      router.push('/dashboard'); // ✅ redirect on success
-    } else {
-      setError(data.error || 'Login failed.');
+      if (res.ok) {
+        // Optional: delay for animation effect
+        setTimeout(() => {
+          router.push('/dashboard');
+        }, 2000); // ⏱️ 2 seconds delay
+      } else {
+        setError(data.error || 'Login failed.');
+        setLoading(false);
+      }
+    } catch (err) {
+      setError('An unexpected error occurred.');
+      setLoading(false);
     }
   };
 
@@ -94,10 +105,22 @@ export default function LoginForm() {
 
         <Button
           type="submit"
-          className="w-full flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 rounded-md transition"
+          disabled={loading}
+          className={`w-full flex items-center justify-center gap-2 ${
+            loading ? 'bg-indigo-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'
+          } text-white font-medium py-2 rounded-md transition`}
         >
-          Log In
-          <ArrowRightIcon className="h-5 w-5" />
+          {loading ? (
+            <>
+              <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              Logging in...
+            </>
+          ) : (
+            <>
+              Log In
+              <ArrowRightIcon className="h-5 w-5" />
+            </>
+          )}
         </Button>
       </form>
     </div>
