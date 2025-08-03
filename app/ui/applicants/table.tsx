@@ -12,7 +12,7 @@ export default async function ApplicantsTable({
   query,
   currentPage,
 }: ApplicantsTableProps) {
-  const applicants: ApplicantPreview[] = await fetchApplicants(query);
+  const applicants: ApplicantPreview[] = await fetchApplicants(query, currentPage);
 
   if (!applicants.length) {
     return (
@@ -24,12 +24,11 @@ export default async function ApplicantsTable({
     <section className="mt-6">
       <div className="inline-block min-w-full align-middle">
         <div className="rounded-lg bg-gray-50 p-2 md:pt-0">
+
           {/* ✅ Mobile View */}
           <div className="md:hidden space-y-4">
             {applicants.map((applicant) => {
-              const formattedDate = formatDateToLocal(
-                applicant.application_date
-              );
+              const formattedDate = formatDateToLocal(applicant.application_date);
 
               return (
                 <div
@@ -38,20 +37,28 @@ export default async function ApplicantsTable({
                 >
                   <div className="flex justify-between items-start border-b pb-2">
                     <div className="space-y-1">
-                      <p className="font-semibold">
+                      <p className="font-semibold truncate">
                         {applicant.first_name} {applicant.last_name}
                       </p>
-                      <p className="text-sm text-gray-500">{applicant.email}</p>
-                      <p className="text-sm text-gray-500">{applicant.phone}</p>
+                      <p className="text-sm text-gray-500 truncate">
+                        {applicant.email || <span className="text-gray-400">No email</span>}
+                      </p>
+                      <p className="text-sm text-gray-500 truncate">
+                        {applicant.phone || <span className="text-gray-400">No phone</span>}
+                      </p>
                       <p className="text-sm text-gray-500">{formattedDate}</p>
-                      <a
-                        href={`/api/resume/${applicant.id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline"
-                      >
-                        Resume
-                      </a>
+                      {applicant.resumes_url ? (
+                        <a
+                          href={applicant.resumes_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline"
+                        >
+                          View Resume
+                        </a>
+                      ) : (
+                        <span className="text-sm text-gray-400">No resume</span>
+                      )}
                       <a
                         href={`/onboarding/${applicant.id}`}
                         className="block mt-1 text-sm text-indigo-600 underline"
@@ -89,37 +96,37 @@ export default async function ApplicantsTable({
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
               {applicants.map((applicant) => {
-                const formattedDate = formatDateToLocal(
-                  applicant.application_date
-                );
+                const formattedDate = formatDateToLocal(applicant.application_date);
 
                 return (
                   <tr
                     key={applicant.id}
                     className="hover:bg-gray-50 transition"
                   >
-                    <td className="py-3 pl-6 pr-3 whitespace-nowrap font-medium">
+                    <td className="py-3 pl-6 pr-3 whitespace-nowrap font-medium max-w-[180px] truncate">
                       {applicant.first_name} {applicant.last_name}
                     </td>
-                    <td className="px-3 py-3 whitespace-nowrap">
-                      {applicant.email}
+                    <td className="px-3 py-3 whitespace-nowrap max-w-[180px] truncate">
+                      {applicant.email || <span className="text-gray-400">No email</span>}
+                    </td>
+                    <td className="px-3 py-3 whitespace-nowrap max-w-[120px] truncate">
+                      {applicant.phone || <span className="text-gray-400">No phone</span>}
                     </td>
                     <td className="px-3 py-3 whitespace-nowrap">
-                      {applicant.phone}
+                      {applicant.resumes_url ? (
+                        <a
+                          href={applicant.resumes_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline"
+                        >
+                          View Resume
+                        </a>
+                      ) : (
+                        <span className="text-gray-400">No resume</span>
+                      )}
                     </td>
-                    <td className="px-3 py-3 whitespace-nowrap">
-                      <a
-                        href={`/api/resume/${applicant.id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 hover:underline"
-                      >
-                        View Resume
-                      </a>
-                    </td>
-                    <td className="px-3 py-3 whitespace-nowrap">
-                      {formattedDate}
-                    </td>
+                    <td className="px-3 py-3 whitespace-nowrap">{formattedDate}</td>
                     <td className="px-4 py-3 whitespace-nowrap">
                       <StatusDropdown
                         id={applicant.id}
@@ -137,7 +144,7 @@ export default async function ApplicantsTable({
                       </a>
                     </td>
                     <td className="py-3 pl-6 pr-3 text-right text-gray-500">
-                      {/* Add future actions here if needed */}
+                      {/* Future actions */}
                     </td>
                   </tr>
                 );

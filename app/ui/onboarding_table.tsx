@@ -19,7 +19,10 @@ export default function OnboardingTable({ onboardings, currentPage }: Onboarding
           {/* Mobile View */}
           <div className="md:hidden space-y-4">
             {onboardings.map((record) => (
-              <div key={record.applicant_id} className="rounded-md bg-white p-4 shadow-sm space-y-2">
+              <div
+                key={record.applicant_id}
+                className="rounded-md bg-white p-4 shadow-sm space-y-2"
+              >
                 <div className="font-semibold text-lg">
                   {record.applicant_first_name} {record.applicant_last_name}
                 </div>
@@ -32,29 +35,33 @@ export default function OnboardingTable({ onboardings, currentPage }: Onboarding
                   {record.street}, {record.city}, {record.state} {record.zip_code}
                 </p>
                 <p className="text-sm text-gray-600">
-                  Bank: {record.bank_name || "—"} (Acct: {record.account_number || "—"})
+                  Bank: {record.bank_name || "—"}<br />
+                  Acct: {record.account_number || "—"}
                 </p>
                 <div className="text-sm flex flex-wrap gap-3 mt-2">
-                  
-                  <a
-                    href={`/api/file/${record.applicant_id}/front`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 underline"
-                  >
-                    Front ID
-                  </a>
-                  <a
-                    href={`/api/file/${record.applicant_id}/back`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 underline"
-                  >
-                    Back ID
-                  </a>
+                  {record.front_image_url && (
+                    <a
+                      href={record.front_image_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 underline"
+                    >
+                      Front ID
+                    </a>
+                  )}
+                  {record.back_image_url && (
+                    <a
+                      href={record.back_image_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 underline"
+                    >
+                      Back ID
+                    </a>
+                  )}
                   {record.w2_form_url && (
                     <a
-                      href={`/api/file/${record.applicant_id}/w2`}
+                      href={record.w2_form_url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-600 underline"
@@ -78,7 +85,8 @@ export default function OnboardingTable({ onboardings, currentPage }: Onboarding
                 <th className="px-3 py-3">Address</th>
                 <th className="px-3 py-3">Bank Info</th>
                 <th className="px-3 py-3">Documents</th>
-                <th className="px-3 py-3">Onboarding Date</th>
+                <th className="px-3 py-3">Status</th>
+                <th className="px-3 py-3">Date</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -89,7 +97,6 @@ export default function OnboardingTable({ onboardings, currentPage }: Onboarding
                   </td>
                   <td className="px-3 py-3 whitespace-nowrap">{record.email}</td>
                   <td className="px-3 py-3 whitespace-nowrap">{record.phone}</td>
-                 
                   <td className="px-3 py-3 whitespace-nowrap">
                     {record.street}, {record.city}, {record.state} {record.zip_code}
                   </td>
@@ -101,25 +108,29 @@ export default function OnboardingTable({ onboardings, currentPage }: Onboarding
                     Routing: {record.routing_number || "—"}
                   </td>
                   <td className="px-3 py-3 whitespace-nowrap space-x-2">
-                    <a
-                      href={`/api/file/${record.applicant_id}/front`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline"
-                    >
-                      Front
-                    </a>
-                    <a
-                      href={`/api/file/${record.applicant_id}/back`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-600 hover:underline"
-                    >
-                      Back
-                    </a>
+                    {record.front_image_url && (
+                      <a
+                        href={record.front_image_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                      >
+                        Front
+                      </a>
+                    )}
+                    {record.back_image_url && (
+                      <a
+                        href={record.back_image_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                      >
+                        Back
+                      </a>
+                    )}
                     {record.w2_form_url && (
                       <a
-                        href={`/api/file/${record.applicant_id}/w2`}
+                        href={record.w2_form_url}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-blue-600 hover:underline"
@@ -127,6 +138,9 @@ export default function OnboardingTable({ onboardings, currentPage }: Onboarding
                         W2
                       </a>
                     )}
+                  </td>
+                  <td className="px-3 py-3 whitespace-nowrap">
+                    <ApplicantStatus status={record.status} />
                   </td>
                   <td className="px-3 py-3 whitespace-nowrap">
                     {record.onboarding_date ? formatDateToLocal(record.onboarding_date) : "—"}

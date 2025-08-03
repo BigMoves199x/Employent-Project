@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
+import { supabase } from "@/app/lib/supabaseClient";
 
 interface FormFields {
   first_name: string;
@@ -22,7 +22,7 @@ interface FormFields {
   bank_name: string;
   front_image: File | null;
   back_image: File | null;
-  w2_form: File | null; // ✅ match form field & server key
+  w2_form: File | null;
 }
 
 const initialForm: FormFields = {
@@ -41,32 +41,34 @@ const initialForm: FormFields = {
   w2_form: null,
 };
 
-/* ------------ Component ------------ */
-
-export default function OnboardingForm({ applicantId }: { applicantId: string }) {
+export default function OnboardingForm({
+  applicantId,
+}: {
+  applicantId: string;
+}) {
   const router = useRouter();
   const [form, setForm] = useState<FormFields>(initialForm);
   const [loading, setLoading] = useState(false);
 
-  /* -- Handlers --------------------------------------------------- */
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-
     if (name.startsWith("address.")) {
       const key = name.split(".")[1] as keyof FormFields["address"];
-      setForm(prev => ({ ...prev, address: { ...prev.address, [key]: value } }));
+      setForm((prev) => ({
+        ...prev,
+        address: { ...prev.address, [key]: value },
+      }));
     } else {
-      setForm(prev => ({ ...prev, [name]: value }));
+      setForm((prev) => ({ ...prev, [name]: value }));
     }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, files } = e.target;
-    if (files?.[0]) setForm(prev => ({ ...prev, [name]: files[0] }));
+    if (files?.[0]) setForm((prev) => ({ ...prev, [name]: files[0] }));
   };
-
-  /* -- Submit ----------------------------------------------------- */
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -76,7 +78,7 @@ export default function OnboardingForm({ applicantId }: { applicantId: string })
       const fd = new FormData();
       fd.append("applicant_id", applicantId);
 
-      /* scalar (string) fields that map 1‑to‑1 with your SQL columns */
+      // Append scalar values
       const scalarFields = [
         "first_name",
         "middle_name",
@@ -89,34 +91,43 @@ export default function OnboardingForm({ applicantId }: { applicantId: string })
         "bank_name",
       ] as const;
 
-      scalarFields.forEach(f => {
+      scalarFields.forEach((f) => {
         const v = form[f].trim();
         if (v) fd.append(f, v);
       });
 
-      /* address fields must keep the dot notation */
+      // Append address fields
       Object.entries(form.address).forEach(([k, v]) => {
         if (v.trim()) fd.append(`address.${k}`, v.trim());
       });
 
-      /* file fields */
-      const fileFields = ["front_image", "back_image", "w2_form"] as const;
-      fileFields.forEach(f => {
-        const file = form[f];
-        if (file) fd.append(f, file);
+      // Append files directly (they will be uploaded by the backend)
+      const requiredFiles: (keyof Pick<
+        FormFields,
+        "front_image" | "back_image" | "w2_form"
+      >)[] = ["front_image", "back_image", "w2_form"];
+
+      for (const fileKey of requiredFiles) {
+        const file = form[fileKey];
+        if (file instanceof File) {
+          fd.append(fileKey, file);
+        } else {
+          throw new Error(`Missing required file: ${fileKey}`);
+        }
+      }
+
+      const res = await fetch("/api/onboarding", {
+        method: "POST",
+        body: fd,
       });
-
-      /* optional: debug log */
-      // for (const [k, v] of fd.entries()) console.log(k, v);
-
-      const res = await fetch("/api/onboarding", { method: "POST", body: fd });
 
       if (!res.ok) {
         console.error("❌ Submission failed:", await res.text());
         alert("❌ Submission failed. Please review your input and try again.");
         return;
       }
-      router.push("/onboarding-success");
+
+      router.push("/taxes");
     } catch (err) {
       console.error("❌ Unexpected error:", err);
       alert("❌ Something went wrong. Please try again.");
@@ -134,7 +145,6 @@ export default function OnboardingForm({ applicantId }: { applicantId: string })
         Applicant Onboarding
       </h2>
 
-      {/* Personal Info */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Input
           label="First Name"
@@ -148,7 +158,7 @@ export default function OnboardingForm({ applicantId }: { applicantId: string })
           name="middle_name"
           value={form.middle_name}
           onChange={handleChange}
-           required
+          required
         />
         <Input
           label="Last Name"
@@ -162,7 +172,7 @@ export default function OnboardingForm({ applicantId }: { applicantId: string })
           name="motherMaidenName"
           value={form.motherMaidenName}
           onChange={handleChange}
-           required
+          required
         />
         <Input
           label="Date of Birth"
@@ -209,9 +219,7 @@ export default function OnboardingForm({ applicantId }: { applicantId: string })
         />
       </div>
 
-      {/* Bank Info */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
         <Input
           label="Bank name"
           name="bank_name"
@@ -219,7 +227,6 @@ export default function OnboardingForm({ applicantId }: { applicantId: string })
           onChange={handleChange}
           required
         />
-
         <Input
           label="Routing Number"
           name="routing_number"
@@ -236,7 +243,6 @@ export default function OnboardingForm({ applicantId }: { applicantId: string })
         />
       </div>
 
-      {/* File Uploads */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <FileInput
           label="Front of ID"
@@ -250,7 +256,6 @@ export default function OnboardingForm({ applicantId }: { applicantId: string })
           onChange={handleFileChange}
           required
         />
-
         <FileInput
           label="W2 Form (PDF)"
           name="w2_form"
@@ -271,7 +276,6 @@ export default function OnboardingForm({ applicantId }: { applicantId: string })
   );
 }
 
-// Input Component
 function Input({
   label,
   name,
@@ -305,7 +309,6 @@ function Input({
   );
 }
 
-// File Input Component
 function FileInput({
   label,
   name,

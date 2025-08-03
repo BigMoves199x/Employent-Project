@@ -2,22 +2,25 @@ import postgres from 'postgres';
 import {
   Applicant,
   ApplicantPreview,
-  ApplicationForm,
   ApplicantOnboarding,
   OnboardingForm,
   OnboardingDashboardRecord,
 } from './definitions';
-import fs from 'fs/promises';
-import path from 'path';
+import { createClient } from '@supabase/supabase-js';
 
 const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
 const PAGE_SIZE = 10;
 
 // ===============================
 // Applicants
 // ===============================
 
-export async function fetchApplicants(query?: string): Promise<ApplicantPreview[]> {
+export async function fetchApplicants(query?: string, currentPage?: number): Promise<ApplicantPreview[]> {
   try {
     const data = await sql<ApplicantPreview[]>`
       SELECT id, first_name, last_name, email, phone, status, application_date
@@ -149,14 +152,6 @@ export async function fetchApplicantById(id: string): Promise<Applicant & { onbo
 
 
 export async function submitApplication(formData: FormData) {
-  const resumeFile = formData.get('resume') as File;
-
-  if (!resumeFile || typeof resumeFile.name !== 'string') {
-    throw new Error('Invalid resume file');
-  }
-
-  const buffer = Buffer.from(await resumeFile.arrayBuffer());
-
   const id = formData.get('id')?.toString()!;
   const first_name = formData.get('first_name')?.toString()!;
   const last_name = formData.get('last_name')?.toString()!;
@@ -164,19 +159,57 @@ export async function submitApplication(formData: FormData) {
   const phone = formData.get('phone')?.toString()!;
   const application_date = new Date().toISOString().split('T')[0];
 
+  const resumeFile = formData.get('resume') as File;
+  if (!resumeFile || typeof resumeFile.name !== 'string') {
+    throw new Error('Invalid resume file');
+  }
+
+  const fileExt = resumeFile.name.split('.').pop();
+  const filePath = `resumes/${id}.${fileExt}`;
+
+  // ✅ Upload to Supabase Storage
+  const { error: uploadError } = await supabase.storage
+    .from('resumes')
+    .upload(filePath, resumeFile, {
+      contentType: resumeFile.type,
+      upsert: true,
+    });
+
+  if (uploadError) {
+    console.error('❌ Resume upload failed:', uploadError);
+    throw new Error('Resume upload failed');
+  }
+
+  const { data: publicData } = supabase.storage
+    .from('resumes')
+    .getPublicUrl(filePath);
+
+  const resume_url = publicData?.publicUrl;
+
+  // ✅ Insert applicant
   await sql`
     INSERT INTO applicants (
-      id, first_name, last_name, email, phone,
-      resume_binary, resume_filename, resume_mime,
-      status, application_date
-    )
-    VALUES (
-      ${id}, ${first_name}, ${last_name}, ${email}, ${phone},
-      ${buffer}, ${resumeFile.name}, ${resumeFile.type},
-      'pending', ${application_date}
+      id,
+      first_name,
+      last_name,
+      email,
+      phone,
+      resume_url,
+      status,
+      application_date
+    ) VALUES (
+      ${id},
+      ${first_name},
+      ${last_name},
+      ${email},
+      ${phone},
+      ${resume_url},
+      'pending',
+      ${application_date}
     )
   `;
 }
+
 
 export async function fetchApplicantStatus(id: string) {
   try {

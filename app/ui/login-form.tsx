@@ -104,24 +104,30 @@ export default function LoginForm() {
         )}
 
         <Button
-          type="submit"
-          disabled={loading}
-          className={`w-full flex items-center justify-center gap-2 ${
-            loading ? 'bg-indigo-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'
-          } text-white font-medium py-2 rounded-md transition`}
-        >
-          {loading ? (
-            <>
-              <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              Logging in...
-            </>
-          ) : (
-            <>
-              Log In
-              <ArrowRightIcon className="h-5 w-5" />
-            </>
-          )}
-        </Button>
+  type="submit"
+  disabled={loading}
+  className={`w-full flex items-center justify-center gap-2 font-medium py-2 rounded-md transition-colors
+    ${
+      loading
+        ? 'cursor-not-allowed bg-white text-[#072a40] border border-[#072a40]'
+        : 'bg-[#072a40] hover:bg-[#041b2c] text-white'
+    }`}
+  aria-busy={loading}
+>
+  {loading ? (
+    <>
+      <span className="sr-only">Loading</span>
+      <div className="h-5 w-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+      <span>Logging in...</span>
+    </>
+  ) : (
+    <>
+      <span>Log In</span>
+      <ArrowRightIcon className="h-5 w-5" />
+    </>
+  )}
+</Button>
+
       </form>
     </div>
   );

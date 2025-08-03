@@ -1,3 +1,5 @@
+// types/definitions.ts
+
 // Full applicant (with resume file reference)
 export type Applicant = {
   id: string;
@@ -60,7 +62,7 @@ export type OnboardingForm = {
     front_image_url: string;
     back_image_url: string;
   };
-  w2_form_url: string; // now a file URL
+  w2_form_url: string;
 };
 
 // DB or API response object
@@ -86,7 +88,7 @@ export type ApplicantOnboarding = {
     front_image_url: string;
     back_image_url: string;
   };
-  w2_form_url: string; // not binary anymore
+  w2_form_url: string;
   onboarding_completed: boolean;
   onboarding_date?: string;
 };

@@ -1,83 +1,68 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile } from 'fs/promises';
-import { mkdtemp, rm } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
-import path from 'node:path';
 import { sql } from '@vercel/postgres';
 import { randomUUID } from 'crypto';
 import { sendTelegramNotification } from '@/app/lib/sendTelegramNotification';
 
 export async function POST(req: NextRequest) {
   try {
-    /* ── Parse form ───────────────────────────────────────── */
-    const formData = await req.formData();
+    console.log('📥 Receiving JSON form submission...');
 
-    const first_name = formData.get('first_name')?.toString().trim()  || '';
-    const last_name  = formData.get('last_name') ?.toString().trim()  || '';
-    const email      = formData.get('email')     ?.toString().trim()  .toLowerCase() || '';
-    const phone      = formData.get('phone')     ?.toString().trim()  || '';
-    const resume     = formData.get('resume')    as File | null;
+    const contentType = req.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      return NextResponse.json(
+        { error: 'Content-Type must be application/json' },
+        { status: 400 }
+      );
+    }
 
-    if (!first_name || !last_name || !email || !phone || !resume) {
+    const body = await req.json();
+
+    const first_name = body.first_name?.toString().trim() || '';
+    const last_name = body.last_name?.toString().trim() || '';
+    const email = body.email?.toString().trim().toLowerCase() || '';
+    const phone = body.phone?.toString().trim() || '';
+    const resumeUrl = body.resume_url?.toString().trim() || '';
+
+    console.log('📝 Parsed Data:', { first_name, last_name, email, phone, resumeUrl });
+
+    if (!first_name || !last_name || !email || !phone || !resumeUrl) {
+      console.warn('⚠️ Missing required fields');
       return NextResponse.json({ error: 'All fields are required.' }, { status: 400 });
     }
 
-    /* ── Validate resume ─────────────────────────────────── */
-    if (resume.size > 5 * 1024 * 1024) {
-      return NextResponse.json({ error: 'Resume file too large (max 5 MB).' }, { status: 400 });
-    }
+    const id = randomUUID();
 
-    const allowed = [
-      'application/pdf',
-      'application/msword',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    ];
-    if (!allowed.includes(resume.type)) {
-      return NextResponse.json({ error: 'Unsupported resume format.' }, { status: 400 });
-    }
-
-    /* ── Write file into /tmp (Vercel‑writable) ───────────── */
-    const tmpDir  = await mkdtemp(path.join(tmpdir(), 'upload-'));
-    const fileExt = path.extname(resume.name).toLowerCase();
-    const safe    = `${first_name}-${last_name}`.replace(/[^a-zA-Z0-9-_]/g, '');
-    const unique  = `${safe}-${randomUUID()}${fileExt}`;
-
-    const tmpPath = path.join(tmpDir, unique);
-    await writeFile(tmpPath, Buffer.from(await resume.arrayBuffer()));
-
-    /*  If you plan to move the file to S3/Supabase, do it here.
-        For demo we keep only metadata in the DB.                       */
-
-    const resume_url = `/tmp/${unique}`; // placeholder URL stored for now
-
-    /* ── Insert applicant (no binary columns) ─────────────── */
-    const result = await sql<{ id: string }>`
+    // Insert into PostgreSQL
+    console.log('🛢 Inserting into PostgreSQL...');
+    const result = await sql`
       INSERT INTO applicants (
-        first_name, last_name, email, phone,
-        resume_url, resume_filename, resume_mime,
-        status, application_date
+        id, first_name, last_name, email, phone,
+        resume_url, status, application_date
       )
       VALUES (
+        ${id},
         ${first_name}, ${last_name}, ${email}, ${phone},
-        ${resume_url}, ${resume.name}, ${resume.type},
-        'pending', CURRENT_DATE
+        ${resumeUrl}, 'pending', CURRENT_DATE
       )
       RETURNING id
     `;
-    const id = result.rows[0]?.id;
-    if (!id) throw new Error('DB insert failed');
 
-    /* ── Notify Telegram ──────────────────────────────────── */
-    await sendTelegramNotification(
-      `📝 *New applicant*\nName: ${first_name} ${last_name}\nEmail: ${email}`
-    );
+    console.log('✅ Database insert successful:', result.rows[0]);
 
-    /* Clean up temp file/folder (optional but polite) */
-    await rm(tmpDir, { recursive: true, force: true });
+    // Send Telegram notification
+    console.log('📨 Sending Telegram notification...');
+    try {
+      await sendTelegramNotification(
+        `📝 *New Applicant*\nName: ${first_name} ${last_name}\nEmail: ${email}\nResume: ${resumeUrl}`
+      );
+      console.log('✅ Telegram notification sent.');
+    } catch (telegramErr) {
+      console.error('❌ Telegram notification failed:', telegramErr);
+    }
 
     return NextResponse.json({ success: true, id });
   } catch (err) {
-    console.error('❌ /api/apply error:', err);
-    return NextResponse.json({ error: 'Failed to upload resume.' }, { status: 500 });
+    console.error('❌ /api/apply error (unhandled):', err);
+    return NextResponse.json({ error: 'Failed to submit application.' }, { status: 500 });
   }
 }
