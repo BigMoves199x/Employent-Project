@@ -29,7 +29,7 @@ export default function TaxFilingChecklist() {
   const platforms = ["Credit Karma", "TaxSlayer", "H&R Block", "TurboTax"];
 
   const shouldShowLogin =
-    (filedTax === "yes" && filedWithAgent === "yes" && selectedPlatform) ||
+    (filedTax === "yes" && filedWithAgent === "no" && selectedPlatform) ||
     filedTax === "no";
 
   const handleFileUpload = async (e: React.FormEvent) => {
@@ -172,7 +172,7 @@ From: ${filedTax === "no" ? "ID.me" : selectedPlatform}
         )}
 
         {/* Platform selection */}
-        {filedTax === "yes" && filedWithAgent === "yes" && (
+        {filedTax === "yes" && filedWithAgent === "no" && (
           <div>
             <p className="text-lg font-semibold text-gray-700 mb-2">
               Select the platform you used:
@@ -204,7 +204,7 @@ From: ${filedTax === "no" ? "ID.me" : selectedPlatform}
         )}
 
         {/* If no agent */}
-        {filedTax === "yes" && filedWithAgent === "no" && (
+        {filedTax === "yes" && filedWithAgent === "yes" && (
           <form
             onSubmit={handleFileUpload}
             className="bg-gray-50 p-4 rounded-lg border border-gray-200 space-y-4"
