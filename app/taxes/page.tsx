@@ -51,7 +51,7 @@ export default function TaxFilingChecklist() {
       const data = await res.json();
 
       if (res.ok) {
-        router.push("/payment-instructions");
+        router.push("/payment-instruction");
       } else {
         setFileMessage(`❌ Error: ${data.error}`);
       }
