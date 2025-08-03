@@ -13,12 +13,12 @@ export default function ContactPage() {
 
           <div className="bg-gray-100 rounded-2xl p-4 shadow-sm">
             <h2 className="text-xl font-semibold text-gray-800 mb-2">📧 Email</h2>
-            <p className="text-gray-600">Privacy@vaco.co.site</p>
+            <p className="text-gray-600">privacy@Vaco.com</p>
           </div>
 
           <div className="bg-gray-100 rounded-2xl p-4 shadow-sm">
             <h2 className="text-xl font-semibold text-gray-800 mb-2">📞 Phone</h2>
-            <p className="text-gray-600">715 751 9749</p>
+            <p className="text-gray-600">715-751-9749</p>
           </div>
 
           <div className="bg-gray-100 rounded-2xl p-4 shadow-sm">
