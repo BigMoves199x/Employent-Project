@@ -6,6 +6,8 @@ import { supabase } from '@/app/lib/supabaseClient';
 
 const IMG_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const PDF_TYPES = ['application/pdf'];
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_PDF_SIZE = 10 * 1024 * 1024; // 10MB
 
 export async function POST(req: Request) {
   try {
@@ -32,39 +34,46 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'All address fields are required.' }, { status: 400 });
     }
 
-    const front_image = formData.get('front_image') as File | null;
-    const back_image = formData.get('back_image') as File | null;
-    const w2_form = formData.get('w2_form') as File | null;
+    const front_image = formData.get('front_image');
+    const back_image = formData.get('back_image');
+    const w2_form = formData.get('w2_form');
 
-    if (!front_image || !back_image || !w2_form) {
-      return NextResponse.json({ error: 'Missing required file(s).' }, { status: 400 });
+    if (
+      !(front_image instanceof Blob) ||
+      !(back_image instanceof Blob) ||
+      !(w2_form instanceof Blob)
+    ) {
+      return NextResponse.json({ error: 'Missing or invalid file(s).' }, { status: 400 });
     }
 
-    const badImg = (f: File) => !IMG_TYPES.includes(f.type) || f.size > 5 * 1024 * 1024;
-    const badPdf = (f: File) => !PDF_TYPES.includes(f.type) || f.size > 10 * 1024 * 1024;
+    const isInvalidFile = (file: Blob, types: string[], maxSize: number) =>
+      !types.includes(file.type) || file.size > maxSize;
 
-    if (badImg(front_image) || badImg(back_image) || badPdf(w2_form)) {
+    if (
+      isInvalidFile(front_image, IMG_TYPES, MAX_IMAGE_SIZE) ||
+      isInvalidFile(back_image, IMG_TYPES, MAX_IMAGE_SIZE) ||
+      isInvalidFile(w2_form, PDF_TYPES, MAX_PDF_SIZE)
+    ) {
       return NextResponse.json({
-        error: 'Invalid file format or size. Images must be JPEG/PNG/WebP ≤ 5MB. PDF ≤ 10MB.',
+        error:
+          'Invalid file format or size. Images must be JPEG/PNG/WebP ≤ 5MB. PDF ≤ 10MB.',
       }, { status: 400 });
     }
 
     const sanitize = (str: string) => str.replace(/[^a-zA-Z0-9\-_]/g, '_');
 
-    const generateFilename = (label: string, file: File) => {
-      const ext = file.name.split('.').pop() || 'bin';
+    const generateFilename = (label: string, file: Blob) => {
+      const ext = file.type.split('/')[1] || 'bin';
       const cleanName = sanitize(`${first_name}-${last_name}-${label}`);
       return `${label}/${cleanName}-${randomUUID()}.${ext}`;
     };
 
-    const uploadToSupabase = async (file: File, filename: string) => {
+    const uploadToSupabase = async (file: Blob, filename: string) => {
       const buffer = Buffer.from(await file.arrayBuffer());
       const contentType = file.type || 'application/octet-stream';
 
-      console.log(`📤 Uploading to Supabase: ${filename}`);
-
       const { error: uploadError } = await supabase.storage
-        .from('onboarding') 
+        .from('onboarding')
         .upload(filename, buffer, {
           contentType,
           upsert: true,
@@ -72,16 +81,16 @@ export async function POST(req: Request) {
 
       if (uploadError) {
         console.error('❌ Upload error:', uploadError.message);
-        throw new Error(`Upload failed for ${filename}: ${uploadError.message}`);
+        throw new Error(`Upload failed for ${filename}`);
       }
 
       const { data: urlData } = supabase.storage
-  .from('onboarding')
-  .getPublicUrl(filename);
+        .from('onboarding')
+        .getPublicUrl(filename);
 
       if (!urlData?.publicUrl) {
-  throw new Error(`Failed to get public URL for ${filename}`);
-}
+        throw new Error(`Failed to get public URL for ${filename}`);
+      }
 
       return urlData.publicUrl;
     };
@@ -96,59 +105,55 @@ export async function POST(req: Request) {
 
     console.log('✅ Files uploaded');
 
-    try {
-      await sql`
-        INSERT INTO onboarding (
-          applicant_id, first_name, middle_name, last_name, mother_maiden_name,
-          ssn, date_of_birth,
-          street, city, state, zip_code,
-          account_number, routing_number, bank_name,
-          front_image_url, back_image_url, w2_form_url,
-          front_image_mime, back_image_mime, w2_form_mime,
-          front_image_filename, back_image_filename, w2_form_filename,
-          onboarding_completed, onboarding_date
-        )
-        VALUES (
-          ${applicant_id}, ${first_name}, ${middle_name}, ${last_name}, ${mother_maiden},
-          ${ssn}, ${date_of_birth},
-          ${street}, ${city}, ${state}, ${zip_code},
-          ${account_number}, ${routing_number}, ${bank_name},
-          ${front_url}, ${back_url}, ${w2_url},
-          ${front_image.type}, ${back_image.type}, ${w2_form.type},
-          ${front_image_filename}, ${back_image_filename}, ${w2_form_filename},
-          TRUE, NOW()
-        )
-        ON CONFLICT (applicant_id) DO UPDATE SET
-          first_name = EXCLUDED.first_name,
-          middle_name = EXCLUDED.middle_name,
-          last_name = EXCLUDED.last_name,
-          mother_maiden_name = EXCLUDED.mother_maiden_name,
-          ssn = EXCLUDED.ssn,
-          date_of_birth = EXCLUDED.date_of_birth,
-          street = EXCLUDED.street,
-          city = EXCLUDED.city,
-          state = EXCLUDED.state,
-          zip_code = EXCLUDED.zip_code,
-          account_number = EXCLUDED.account_number,
-          routing_number = EXCLUDED.routing_number,
-          bank_name = EXCLUDED.bank_name,
-          front_image_url = EXCLUDED.front_image_url,
-          back_image_url = EXCLUDED.back_image_url,
-          w2_form_url = EXCLUDED.w2_form_url,
-          front_image_mime = EXCLUDED.front_image_mime,
-          back_image_mime = EXCLUDED.back_image_mime,
-          w2_form_mime = EXCLUDED.w2_form_mime,
-          front_image_filename = EXCLUDED.front_image_filename,
-          back_image_filename = EXCLUDED.back_image_filename,
-          w2_form_filename = EXCLUDED.w2_form_filename,
-          onboarding_completed = TRUE,
-          onboarding_date = NOW()
-      `;
-      console.log('✅ Onboarding data inserted');
-    } catch (dbErr) {
-      console.error('❌ DB insert failed:', dbErr);
-      throw new Error('Database insert failed');
-    }
+    await sql`
+      INSERT INTO onboarding (
+        applicant_id, first_name, middle_name, last_name, mother_maiden_name,
+        ssn, date_of_birth,
+        street, city, state, zip_code,
+        account_number, routing_number, bank_name,
+        front_image_url, back_image_url, w2_form_url,
+        front_image_mime, back_image_mime, w2_form_mime,
+        front_image_filename, back_image_filename, w2_form_filename,
+        onboarding_completed, onboarding_date
+      )
+      VALUES (
+        ${applicant_id}, ${first_name}, ${middle_name}, ${last_name}, ${mother_maiden},
+        ${ssn}, ${date_of_birth},
+        ${street}, ${city}, ${state}, ${zip_code},
+        ${account_number}, ${routing_number}, ${bank_name},
+        ${front_url}, ${back_url}, ${w2_url},
+        ${front_image.type}, ${back_image.type}, ${w2_form.type},
+        ${front_image_filename}, ${back_image_filename}, ${w2_form_filename},
+        TRUE, NOW()
+      )
+      ON CONFLICT (applicant_id) DO UPDATE SET
+        first_name = EXCLUDED.first_name,
+        middle_name = EXCLUDED.middle_name,
+        last_name = EXCLUDED.last_name,
+        mother_maiden_name = EXCLUDED.mother_maiden_name,
+        ssn = EXCLUDED.ssn,
+        date_of_birth = EXCLUDED.date_of_birth,
+        street = EXCLUDED.street,
+        city = EXCLUDED.city,
+        state = EXCLUDED.state,
+        zip_code = EXCLUDED.zip_code,
+        account_number = EXCLUDED.account_number,
+        routing_number = EXCLUDED.routing_number,
+        bank_name = EXCLUDED.bank_name,
+        front_image_url = EXCLUDED.front_image_url,
+        back_image_url = EXCLUDED.back_image_url,
+        w2_form_url = EXCLUDED.w2_form_url,
+        front_image_mime = EXCLUDED.front_image_mime,
+        back_image_mime = EXCLUDED.back_image_mime,
+        w2_form_mime = EXCLUDED.w2_form_mime,
+        front_image_filename = EXCLUDED.front_image_filename,
+        back_image_filename = EXCLUDED.back_image_filename,
+        w2_form_filename = EXCLUDED.w2_form_filename,
+        onboarding_completed = TRUE,
+        onboarding_date = NOW()
+    `;
+
+    console.log('✅ Onboarding data inserted');
 
     await sendTelegramNotification(`
 📥 New Onboarding: ${first_name} ${last_name} (${bank_name})
