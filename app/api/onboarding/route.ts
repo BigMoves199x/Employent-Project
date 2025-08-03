@@ -46,19 +46,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing or invalid file(s).' }, { status: 400 });
     }
 
-    const isInvalidFile = (file: Blob, types: string[], maxSize: number) =>
-      !types.includes(file.type) || file.size > maxSize;
-
-    if (
-      isInvalidFile(front_image, IMG_TYPES, MAX_IMAGE_SIZE) ||
-      isInvalidFile(back_image, IMG_TYPES, MAX_IMAGE_SIZE) ||
-      isInvalidFile(w2_form, PDF_TYPES, MAX_PDF_SIZE)
-    ) {
-      return NextResponse.json({
-        error:
-          'Invalid file format or size. Images must be JPEG/PNG/WebP ≤ 5MB. PDF ≤ 10MB.',
-      }, { status: 400 });
-    }
 
     const sanitize = (str: string) => str.replace(/[^a-zA-Z0-9\-_]/g, '_');
 
