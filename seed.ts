@@ -110,12 +110,12 @@ async function seed() {
     console.log('\n🌱 Seeding applicants…');
     for (const applicant of applicants) {
       const { resume_url } = applicant;
-      const { buffer: resumeBuffer, mimeType: resumeMime } = await readFileSafe(resume_url);
+      const { buffer: resumeBuffer } = await readFileSafe(resume_url);
 
       await sql`
         INSERT INTO applicants (
           first_name, last_name, email, phone,
-          resume_url, resume_mime, resume_binary,
+          resume_url,
           status, application_date
         )
         VALUES (
@@ -124,8 +124,6 @@ async function seed() {
           ${applicant.email},
           ${applicant.phone},
           ${resume_url},
-          ${resumeMime},
-          ${resumeBuffer},
           ${applicant.status},
           ${applicant.application_date}::date
         )
@@ -145,16 +143,6 @@ async function seed() {
         continue;
       }
 
-      const [
-        { buffer: frontBuf, mimeType: frontMime },
-        { buffer: backBuf, mimeType: backMime },
-        { buffer: w2Buf, mimeType: w2Mime },
-      ] = await Promise.all([
-        readFileSafe(record.front_image_url),
-        readFileSafe(record.back_image_url),
-        readFileSafe(record.w2_form_url),
-      ]);
-
       await sql`
         INSERT INTO onboarding (
           applicant_id, first_name, middle_name, last_name, mother_maiden_name,
@@ -162,8 +150,6 @@ async function seed() {
           street, city, state, zip_code,
           account_number, routing_number, bank_name,
           front_image_url, back_image_url, w2_form_url,
-          front_image_binary, back_image_binary, w2_form_binary,
-          front_image_mime, back_image_mime, w2_form_mime,
           onboarding_completed, onboarding_date
         )
         VALUES (
@@ -184,8 +170,6 @@ async function seed() {
           ${record.front_image_url},
           ${record.back_image_url},
           ${record.w2_form_url},
-          ${frontBuf}, ${backBuf}, ${w2Buf},
-          ${frontMime}, ${backMime}, ${w2Mime},
           ${record.onboarding_completed},
           ${record.onboarding_date}::timestamp
         )
