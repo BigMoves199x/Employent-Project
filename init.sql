@@ -85,6 +85,10 @@ CREATE TABLE onboarding (
   onboarding_date      TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+ALTER TABLE onboarding
+ADD COLUMN front_image_filename TEXT,
+ADD COLUMN back_image_filename TEXT,
+ADD COLUMN w2_form_filename TEXT;
 -- ============================================================
 -- Bank Logins Table
 -- ============================================================

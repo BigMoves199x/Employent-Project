@@ -6,7 +6,9 @@ const mime = require("mime-types");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
 
-const sql = postgres(process.env.POSTGRES_URL!, { ssl: 'require' });
+const sql = postgres(process.env.POSTGRES_URL!, {
+  ssl: { rejectUnauthorized: false },
+});
 
 /* ------------------------------------------------------------------ */
 /* 0. Admin User(s)                                                   */
@@ -15,7 +17,7 @@ const adminUsers = [
   {
     id: '410544b2-4001-4271-9855-fec4b6a6442a',
     username: 'admin@jobportal.com',
-    password: 'securepassword', // will be hashed
+    password: 'securepassword', 
   },
 ];
 
