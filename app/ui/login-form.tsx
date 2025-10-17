@@ -102,22 +102,21 @@ export default function LoginForm() {
         {error && (
           <p className="text-sm text-red-500 text-center mt-2">{error}</p>
         )}
-
-        <Button
+<Button
   type="submit"
   disabled={loading}
   className={`w-full flex items-center justify-center gap-2 font-medium py-2 rounded-md transition-colors
     ${
       loading
-        ? 'cursor-not-allowed bg-white text-[#072a40] border border-[#072a40]'
-        : 'bg-[#072a40] hover:bg-[#041b2c] text-white'
+        ? 'cursor-not-allowed  bg-[#072a40] text-white'
+        : 'bg-[#072a40] text-white'
     }`}
   aria-busy={loading}
 >
   {loading ? (
     <>
-      <span className="sr-only">Loading</span>
-      <div className="h-5 w-5 border-2 border-current border-t-transparent rounded-full animate-spin" />
+  
+      <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
       <span>Logging in...</span>
     </>
   ) : (
@@ -127,6 +126,7 @@ export default function LoginForm() {
     </>
   )}
 </Button>
+
 
       </form>
     </div>
