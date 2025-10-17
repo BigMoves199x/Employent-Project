@@ -12,7 +12,7 @@ export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false); // 🔹 Loading state
+  const [loading, setLoading] = useState(false); 
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -37,7 +37,7 @@ export default function LoginForm() {
         // Optional: delay for animation effect
         setTimeout(() => {
           router.push('/dashboard');
-        }, 2000); // ⏱️ 2 seconds delay
+        }, 2000);
       } else {
         setError(data.error || 'Login failed.');
         setLoading(false);

@@ -112,7 +112,6 @@ async function seed() {
     console.log('\n🌱 Seeding applicants…');
     for (const applicant of applicants) {
       const { resume_url } = applicant;
-      const { buffer: resumeBuffer } = await readFileSafe(resume_url);
 
       await sql`
         INSERT INTO applicants (
