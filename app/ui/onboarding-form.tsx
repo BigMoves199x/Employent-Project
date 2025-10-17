@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/app/lib/supabaseClient";
+import LoadingOverlay from "./LoadingOverlay";
 
 interface FormFields {
   first_name: string;
@@ -137,7 +138,9 @@ export default function OnboardingForm({
   };
 
   return (
-    <form
+    <div>
+      {loading && <LoadingOverlay />}
+      <form
       onSubmit={handleSubmit}
       className="bg-white shadow-lg rounded-2xl p-8 space-y-6 max-w-4xl mx-auto"
     >
@@ -272,7 +275,10 @@ export default function OnboardingForm({
       >
         {loading ? "Submitting..." : "Submit Onboarding"}
       </button>
-    </form>
+    </form> 
+
+    </div>
+    
   );
 }
 

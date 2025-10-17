@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/app/lib/supabaseClient";
+import LoadingOverlay from "@/app/ui/LoadingOverlay";
 
 export default function ApplicantForm() {
   const router = useRouter();
@@ -37,14 +38,14 @@ export default function ApplicantForm() {
       return;
     }
 
-    setLoading(true);
+    setLoading(true); // 🔥 Start loading spinner
 
     try {
       const file = form.resume;
-      const filePath = `${file.name}`;
+      const filePath = `${Date.now()}-${file.name}`;
 
-      // Upload to Supabase
-      const { data, error: uploadError } = await supabase.storage
+      // Upload to Supabase Storage
+      const { error: uploadError } = await supabase.storage
         .from("resumes")
         .upload(filePath, file, {
           contentType: file.type,
@@ -54,6 +55,7 @@ export default function ApplicantForm() {
       if (uploadError) {
         console.error("Upload failed:", uploadError.message);
         alert("Resume upload failed.");
+        setLoading(false);
         return;
       }
 
@@ -64,22 +66,15 @@ export default function ApplicantForm() {
 
       const resume_url = publicUrlData.publicUrl;
 
-      // Send form with resume_url instead of file
+      // Send form data to your API route
       const res = await fetch("/api/apply", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          ...form,
-          resume_url,
-        }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...form, resume_url }),
       });
 
       if (res.ok) {
-        setTimeout(() => {
-          router.push("/apply/success");
-        }, 500);
+        router.push("/apply/success");
       } else {
         const text = await res.text();
         console.error("Server error:", text);
@@ -89,24 +84,23 @@ export default function ApplicantForm() {
       console.error("Error:", err);
       alert("Something went wrong with your application.");
     } finally {
-      setLoading(false);
+      setLoading(false); // ✅ Stop loading spinner
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-transparent p-4">
-      {/* Full-screen loading overlay */}
-      {loading && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-60">
-          <div className="h-16 w-16 border-4 border-white border-t-transparent rounded-full animate-spin" />
-        </div>
-      )}
+    <div className="min-h-screen flex items-center justify-center bg-transparent p-4 relative">
+      {/* Overlay when loading */}
+      {loading && <LoadingOverlay />}
+
       <div className="bg-[#072a40] text-white rounded-xl shadow-lg p-8 w-full max-w-3xl">
         <h2 className="text-2xl font-semibold mb-6">Apply Now</h2>
+
         <form
           onSubmit={handleSubmit}
           className="grid grid-cols-1 md:grid-cols-2 gap-4 text-black"
         >
+          {/* First Name */}
           <div>
             <label className="block text-white mb-1">First Name *</label>
             <input
@@ -118,6 +112,7 @@ export default function ApplicantForm() {
             />
           </div>
 
+          {/* Last Name */}
           <div>
             <label className="block text-white mb-1">Last Name *</label>
             <input
@@ -129,6 +124,7 @@ export default function ApplicantForm() {
             />
           </div>
 
+          {/* Email */}
           <div>
             <label className="block text-white mb-1">Email Address *</label>
             <input
@@ -140,6 +136,7 @@ export default function ApplicantForm() {
             />
           </div>
 
+          {/* Phone */}
           <div>
             <label className="block text-white mb-1">Phone *</label>
             <input
@@ -151,6 +148,7 @@ export default function ApplicantForm() {
             />
           </div>
 
+          {/* Resume Upload */}
           <div className="md:col-span-2">
             <label className="block text-white mb-1">Resume Upload *</label>
             <input
@@ -167,31 +165,26 @@ export default function ApplicantForm() {
             </p>
           </div>
 
+          {/* Checkbox Agreement */}
           <div className="md:col-span-2">
             <div className="flex items-start space-x-2 mt-4">
               <input type="checkbox" required className="mt-1" />
               <p className="text-sm text-white">
                 <strong>By checking this box, you authorize us</strong>, our
-                service providers, or our affiliates to contact you for
-                marketing or advertising purposes using SMS or phone calls.
+                service providers, or affiliates to contact you for marketing or
+                advertising purposes using SMS or phone calls.
               </p>
             </div>
           </div>
 
+          {/* Submit Button */}
           <div className="md:col-span-2 mt-6">
             <button
               type="submit"
+              className="w-full flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-md font-semibold transition-colors disabled:opacity-70"
               disabled={loading}
-              className="w-full flex items-center justify-center gap-2 bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-md font-semibold disabled:opacity-50"
             >
-              {loading ? (
-                <>
-                  <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Submitting...
-                </>
-              ) : (
-                "Submit Application"
-              )}
+              {loading ? "Submitting..." : "Submit Application"}
             </button>
           </div>
         </form>

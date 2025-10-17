@@ -1,5 +1,5 @@
 import ApplicantForm from "../ui/applicant-form";
-import LoadingSpinner from "@/app/ui/loading-spinner";
+import LoadingSpinner from "@/app/ui/LoadingOverlay";
 import { Suspense } from "react";
 
 export default function ApplyPage() {

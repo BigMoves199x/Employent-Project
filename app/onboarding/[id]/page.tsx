@@ -1,5 +1,5 @@
 import OnboardingForm from "@/app/ui/onboarding-form";
-import LoadingSpinner from "@/app/ui/loading-spinner";
+import LoadingSpinner from "@/app/ui/LoadingOverlay";
 import { Suspense } from "react";
 
 
