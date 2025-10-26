@@ -60,7 +60,7 @@ export default function Page() {
               Place talent at the center of your growth
             </h1>
             <p className="mt-6 text-lg text-gray-200 font-medium">
-              Empower your workforce. Build with the best.
+              Connecting America's Workforce to remote Opportunities.
             </p>
             <div className="mt-8 space-x-4">
               <Link

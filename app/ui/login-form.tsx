@@ -8,6 +8,7 @@ import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { Button } from './button';
 
 export default function LoginForm() {
+
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -49,6 +50,7 @@ export default function LoginForm() {
   };
 
   return (
+    
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <form
         onSubmit={handleSubmit}

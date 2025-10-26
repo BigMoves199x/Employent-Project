@@ -2,7 +2,7 @@ import "@/app/ui/global.css";
 import { inter } from "@/app/ui/fonts";
 import Footer from "@/app/ui/footer";
 import Navbar from "@/app/ui/navbar";
-import Script from "next/script"; // ✅ Required for <Script>
+import Script from "next/script"; 
 
 export const metadata = {
   title: "Vaco",

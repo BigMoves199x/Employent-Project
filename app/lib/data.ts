@@ -20,7 +20,7 @@ const PAGE_SIZE = 10;
 // Applicants
 // ===============================
 
-export async function fetchApplicants(query?: string, currentPage?: number): Promise<ApplicantPreview[]> {
+export async function fetchApplicants(): Promise<ApplicantPreview[]> {
   try {
     const data = await sql<ApplicantPreview[]>`
       SELECT id, first_name, last_name, email, phone, status, application_date
