@@ -59,7 +59,7 @@ export default function Page() {
             >
               Place talent at the center of your growth
             </h1>
-            <p className="mt-6 text-lg text-gray-200 font-medium">
+            <p className="mt-6 text-lg text-gray-220 font-medium">
               Connecting America's Workforce to remote Opportunities.
             </p>
             <div className="mt-8 space-x-4">

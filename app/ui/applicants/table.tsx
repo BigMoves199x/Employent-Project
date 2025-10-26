@@ -9,10 +9,8 @@ interface ApplicantsTableProps {
 }
 
 export default async function ApplicantsTable({
-  query,
-  currentPage,
 }: ApplicantsTableProps) {
-  const applicants: ApplicantPreview[] = await fetchApplicants(query, currentPage);
+  const applicants: ApplicantPreview[] = await fetchApplicants();
 
   if (!applicants.length) {
     return (
