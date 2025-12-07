@@ -1,18 +1,18 @@
 // This file contains placeholder data for a Job Application system.
-// Replace these with real data or database queries in production.
+
 
 const users = [
   {
     id: '410544b2-4001-4271-9855-fec4b6a6442a',
     name: 'Admin',
     email: 'admin@jobportal.com',
-    password: 'securepassword', // Note: Always hash passwords in production
+    password: 'securepassword', 
   },
 ];
 
 const applicants = [
   {
-    id: "a3d2f7c0-68b0-4f9b-93cb-7d4a741f8eaa", // ✅ valid
+    id: "a3d2f7c0-68b0-4f9b-93cb-7d4a741f8eaa", 
     first_name: 'Jane',
     last_name: 'Smith',
     email: 'jane.doe@example.com',
@@ -22,7 +22,7 @@ const applicants = [
     application_date: '2025-06-10',
   },
   {
-    id: "b134a7e0-9b60-4dd7-82b0-3ef4590c2a4e", // ✅ replaced with valid
+    id: "b134a7e0-9b60-4dd7-82b0-3ef4590c2a4e", 
     first_name: 'John',
     last_name: 'Coal',
     email: 'john.smith@example.com',
