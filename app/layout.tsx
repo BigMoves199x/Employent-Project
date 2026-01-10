@@ -8,7 +8,7 @@ export const metadata = {
   title: "Vaco",
   description: "Vaco job application platform",
   icons: {
-    icon: "/What.jpeg",
+    icon: "/logom.png",
   },
 };
 
