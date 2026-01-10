@@ -141,7 +141,7 @@ export default function Page() {
               role: "UX Designer, Atlanta",
               image: "https://randomuser.me/api/portraits/women/65.jpg",
               quote:
-                "I never imagined finding a job could feel so personal. Vaco guided me every step of the way.",
+                "I never imagined finding a job could feel so personal. GetJobEasy guided me every step of the way.",
             },
             {
               name: "James Morgan",
@@ -155,7 +155,7 @@ export default function Page() {
               role: "Project Manager, Dallas",
               image: "https://randomuser.me/api/portraits/women/44.jpg",
               quote:
-                "The transition into my new role was seamless. Vaco matched me with a perfect-fit company.",
+                "The transition into my new role was seamless. GetJobEasy matched me with a perfect-fit company.",
             },
           ].map((testimonial, idx) => (
             <div

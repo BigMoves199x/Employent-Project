@@ -1,5 +1,5 @@
-import Link from "next/link";
 import Image from "next/image";
+import getjobeasy from "@/public/tiny.png"
 
 export default function Footer() {
   return (
@@ -8,14 +8,14 @@ export default function Footer() {
         {/* Logo and Description */}
         <div className="space-y-4">
           <Image
-            src="https://www.vaco.com/wp-content/uploads/2025/02/Vaco-logo-light.svg"
-            alt="Vaco Logo"
+            src={getjobeasy}
+            alt="Getjobeasy Logo"
             width={120}
-            height={30}
+            height={120}
             className=""
           />
           <p className="text-gray-400 leading-relaxed">
-            Vaco is the talent solutions division of Highspring, a leading global professional services organization. Vaco focuses on Contract Staffing and Direct Hire solutions.
+              GetJobEasy is the talent solutions division of Highspring, a leading global professional services organization. GetJobEasy focuses on Contract Staffing and Direct Hire solutions.
           </p>
         </div>
 

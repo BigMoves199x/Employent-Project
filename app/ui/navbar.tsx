@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import { MagnifyingGlassIcon, GlobeAltIcon } from "@heroicons/react/24/outline";
+import getjobeasy from "@/public/tiny.png"
 
 export default function Navbar() {
   const [hovered, setHovered] = useState(false);
@@ -16,10 +17,10 @@ export default function Navbar() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           <Image
-            src="https://www.vaco.com/wp-content/uploads/2025/02/Vaco-logo-light.svg"
+            src={getjobeasy}
             alt="Vaco logo"
-            width={120}
-            height={120}
+            width={160}
+            height={160}
             className="object-contain"
           />
         </Link>
