@@ -26,32 +26,39 @@ export default function Navbar() {
         </Link>
 
         {/* Nav Links */}
-        <div className="hidden md:flex gap-6 text-sm font-semibold items-center relative">
+        <div className="hidden md:flex gap-6 text-sm font-semibold items-center ">
           {/* Hoverable Solutions and Services */}
           <div
             className="relative"
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
           >
-            <Link href="#" className="hover:text-orange-400">
+            <Link href="#" className="hover:text-orange-400 ">
               Solutions and Services
             </Link>
 
             {/* Dropdown */}
             {hovered && (
-              <div className="absolute left-0 top-full mt-4 w-[960px] bg-white text-black shadow-2xl rounded-xl p-6 z-50 grid grid-cols-4 gap-6 text-sm">
+              <div className="absolute left-40 -translate-x-1/2 top-full mt-4 w-[960px] bg-white text-black shadow-2xl rounded-xl p-4 z-50 grid grid-cols-4 gap-6 text-sm">
                 {/* Column 1 */}
-                <div>
-                  <h3 className="text-xl font-bold text-slate-900">Solutions and Services</h3>
+                <div className="">
+                  <h3 className="text-sm font-bold text-slate-900">Solutions and Services</h3>
                   <p className="mt-2 text-gray-600">
                     Our holistic approach integrates with Highspring’s broader services, spanning
                     strategy, implementation, and talent.
                   </p>
+
+                   <Link
+                    href="#"
+                    className="text-orange-600 font-semibold mt-2 inline-block hover:underline"
+                  >
+                    Learn more ↗
+                  </Link>
                 </div>
 
                 {/* Column 2 */}
                 <div>
-                  <h4 className="text-lg font-semibold text-slate-900">Talent Solutions</h4>
+                  <h4 className="text-sm font-semibold text-slate-900">Talent Solutions</h4>
                   <p className="text-gray-600">
                     Recruiting and strategic staffing services to strengthen your existing team or
                     build new capabilities
@@ -66,25 +73,20 @@ export default function Navbar() {
 
                 {/* Column 3 */}
                 <div>
-                  <h4 className="text-lg font-semibold text-slate-900">Consulting</h4>
-                  <p className="text-gray-600">
-                    Advice, expertise, and capability to move your business initiatives forward with
-                    confidence
-                  </p>
-                  <Link
-                    href="#"
-                    className="text-orange-600 font-semibold mt-2 inline-block hover:underline"
-                  >
-                    Learn more ↗
-                  </Link>
 
-                  <div className="mt-6">
-                    <h4 className="text-lg font-semibold text-slate-900">Managed Services</h4>
+                  <div className="">
+                    <h4 className="text-sm font-semibold text-slate-900">Managed Services</h4>
                     <p className="text-gray-600">
                       Outsourcing for critical business operations so your team can focus on what
                       they do best
                     </p>
                   </div>
+                   <Link
+                    href="#"
+                    className="text-orange-600 font-semibold mt-2 inline-block hover:underline"
+                  >
+                    Learn more ↗
+                  </Link>
                 </div>
 
                 
@@ -96,15 +98,7 @@ export default function Navbar() {
           <Link href="#" className="hover:text-orange-400">
             Expertise
           </Link>
-          <Link href="#" className="hover:text-orange-400">
-            Careers
-          </Link>
-          <Link href="#" className="hover:text-orange-400">
-            Client Success
-          </Link>
-          <Link href="#" className="hover:text-orange-400">
-            Resources
-          </Link>
+
           <Link href="#" className="hover:text-orange-400">
             About Us
           </Link>

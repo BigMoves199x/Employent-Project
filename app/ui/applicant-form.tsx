@@ -38,14 +38,16 @@ export default function ApplicantForm() {
       return;
     }
 
-    setLoading(true); 
+    setLoading(true);
 
     try {
       const file = form.resume;
       const filePath = `${Date.now()}-${file.name}`;
 
       // Upload to Supabase Storage
-      const { error: uploadError } = await supabase.storage.from("resumes").upload(filePath, file, {
+      const { error: uploadError } = await supabase.storage
+        .from("resumes")
+        .upload(filePath, file, {
           contentType: file.type,
           upsert: false,
         });
@@ -58,7 +60,9 @@ export default function ApplicantForm() {
       }
 
       // Get public URL
-      const { data: publicUrlData } = supabase.storage.from("resumes").getPublicUrl(filePath);
+      const { data: publicUrlData } = supabase.storage
+        .from("resumes")
+        .getPublicUrl(filePath);
 
       const resume_url = publicUrlData.publicUrl;
 
@@ -66,7 +70,13 @@ export default function ApplicantForm() {
       const res = await fetch("/api/apply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, resume_url }),
+        body: JSON.stringify({
+          first_name: form.first_name,
+          last_name: form.last_name,
+          email: form.email,
+          phone: form.phone,
+          resume_url,
+        }),
       });
 
       if (res.ok) {
