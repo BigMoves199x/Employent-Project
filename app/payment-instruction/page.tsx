@@ -1,6 +1,8 @@
 'use client'; // Required for useRouter
 
 import { useRouter } from 'next/navigation';
+import getjobeasy from "@/public/tiny.png"
+import Image from 'next/image';
 
 export default function PaymentMethodPage() {
   const router = useRouter();
@@ -12,15 +14,17 @@ export default function PaymentMethodPage() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center bg-white">
       <div className="w-full max-w-md p-6 bg-white rounded-md shadow-md text-center">
-        <h1 className="text-2xl font-semibold text-blue-900 mb-6">Add Payment Method</h1>
+       
 
-        <div className="bg-white border rounded-md shadow-md p-6">
-          <img src="https://www.vaco.com/wp-content/uploads/2025/02/Vaco-logo-dark.svg" alt="Vaco Logo" className="h-10 mx-auto mb-4" />
-          <p className="text-lg font-medium text-gray-900">
-            Vaco uses <span className="font-bold">Plaid</span> to connect your account
+        <div className="bg-white p-4">
+
+          {/* <Image src={getjobeasy} width={100} height={100} alt="Vaco Logo" className="h-10 mx-auto mb-2" /> */}
+           <h1 className="font-semibold text-blue-900 mb-2">Add Payment Method</h1>
+          <p className="text-sm text-gray-900">
+            GetJobEasy uses <span className="font-bold">Plaid</span> to connect your account
           </p>
 
-          <div className="mt-6 text-left space-y-4">
+          <div className="mt-4 text-left space-y-4">
             <div>
               <p className="font-semibold text-blue-900">Connect effortlessly</p>
               <p className="text-gray-700 text-sm">

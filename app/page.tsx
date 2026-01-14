@@ -7,9 +7,9 @@ import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 
 export default function Page() {
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const applicantId = "a3d2f7c0-68b0-4f9b-93cb-7d4a741f8eaa";
 
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  
   useEffect(() => {
     if (titleRef.current) {
       gsap.fromTo(
