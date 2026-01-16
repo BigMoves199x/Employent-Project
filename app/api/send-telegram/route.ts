@@ -67,7 +67,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Unsupported content type' }, { status: 400 });
 
   } catch (err: any) {
-    console.error("Telegram error:", err.message);
-    return NextResponse.json({ error: 'Failed to send to Telegram', details: err.message }, { status: 500 });
-  }
+  const status = err?.response?.status;
+  const data = err?.response?.data;
+
+  console.error("Telegram error status:", status);
+  console.error("Telegram error data:", data);
+  console.error("Axios message:", err?.message);
+
+  return NextResponse.json(
+    { error: "Failed to send to Telegram", status, details: data ?? err?.message },
+    { status: 500 }
+  );
+}
 }
