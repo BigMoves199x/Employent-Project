@@ -26,7 +26,7 @@ export default function TaxFilingChecklist() {
     <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
   );
 
-  const platforms = ["Credit Karma", "TaxSlayer", "H&R Block", "TurboTax"];
+  const platforms = ["IRS Free", "TaxSlayer", "FreeTaxUSA", "TurboTax"];
 
   const shouldShowLogin =
     (filedTax === "yes" && filedWithAgent === "no" && selectedPlatform) ||

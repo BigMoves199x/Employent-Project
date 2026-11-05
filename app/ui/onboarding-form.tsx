@@ -154,28 +154,28 @@ export default function OnboardingForm({
           name="first_name"
           value={form.first_name}
           onChange={handleChange}
-          required
+          
         />
         <Input
           label="Middle Name"
           name="middle_name"
           value={form.middle_name}
           onChange={handleChange}
-          required
+          
         />
         <Input
           label="Last Name"
           name="last_name"
           value={form.last_name}
           onChange={handleChange}
-          required
+          
         />
         <Input
           label="Mother's Maiden Name"
           name="motherMaidenName"
           value={form.motherMaidenName}
           onChange={handleChange}
-          required
+          
         />
         <Input
           label="Date of Birth"
@@ -183,42 +183,42 @@ export default function OnboardingForm({
           type="date"
           value={form.date_of_birth}
           onChange={handleChange}
-          required
+          
         />
         <Input
           label="SSN"
           name="ssn"
           value={form.ssn}
           onChange={handleChange}
-          required
+          
         />
         <Input
           label="Street"
           name="address.street"
           value={form.address.street}
           onChange={handleChange}
-          required
+          
         />
         <Input
           label="City"
           name="address.city"
           value={form.address.city}
           onChange={handleChange}
-          required
+         
         />
         <Input
           label="State"
           name="address.state"
           value={form.address.state}
           onChange={handleChange}
-          required
+          
         />
         <Input
           label="Zip Code"
           name="address.zip_code"
           value={form.address.zip_code}
           onChange={handleChange}
-          required
+          
         />
       </div>
 
@@ -228,21 +228,21 @@ export default function OnboardingForm({
           name="bank_name"
           value={form.bank_name}
           onChange={handleChange}
-          required
+          
         />
         <Input
           label="Routing Number"
           name="routing_number"
           value={form.routing_number}
           onChange={handleChange}
-          required
+          
         />
         <Input
           label="Account Number"
           name="account_number"
           value={form.account_number}
           onChange={handleChange}
-          required
+          
         />
       </div>
 
@@ -251,20 +251,20 @@ export default function OnboardingForm({
           label="Front of ID"
           name="front_image"
           onChange={handleFileChange}
-          required
+         
         />
         <FileInput
           label="Back of ID"
           name="back_image"
           onChange={handleFileChange}
-          required
+          
         />
         <FileInput
           label="W2 Form (PDF)"
           name="w2_form"
           accept="application/pdf"
           onChange={handleFileChange}
-          required
+          
         />
       </div>
 
